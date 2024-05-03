@@ -1,3 +1,4 @@
+
 const canvas = document.querySelector('canvas'),
   toolBtns = document.querySelectorAll('.tool'),
   fillColor = document.querySelector('#fill-color'),
@@ -5,7 +6,9 @@ const canvas = document.querySelector('canvas'),
   changeColor = document.querySelectorAll('.colors .option'),
   colorPicker = document.querySelector('#color-picker'),
   clearCanvasBtn = document.querySelector('.clear-canvas'),
-  saveCanvasBtn = document.querySelector('.save-img')
+  saveCanvasBtn = document.querySelector('.save-img'),
+  undoBtn = document.querySelector(".undoBtn")
+
 
 //VARIABLES
 let ctx = canvas.getContext('2d'),
@@ -87,20 +90,65 @@ const drawing = e => {
     case 'brush':
       ctx.lineTo(e.offsetX, e.offsetY)
       ctx.stroke()
+      emitDrawEvent({
+        tool: 'brush',
+        color: selectedColor,
+        brushWidth,
+        startX: prevMouseX,
+        startY: prevMouseY,
+        endX: e.offsetX,
+        endY: e.offsetY,
+      });
       break
     case 'rectangle':
       drawRectangle(e)
+      emitDrawEvent({
+        tool: 'brush',
+        color: selectedColor,
+        brushWidth,
+        startX: prevMouseX,
+        startY: prevMouseY,
+        endX: e.offsetX,
+        endY: e.offsetY,
+      });
       break
     case 'circle':
       drawCircle(e)
+      emitDrawEvent({
+        tool: 'brush',
+        color: selectedColor,
+        brushWidth,
+        startX: prevMouseX,
+        startY: prevMouseY,
+        endX: e.offsetX,
+        endY: e.offsetY,
+      });
       break
     case 'triangle':
       drawTriangle(e)
+      emitDrawEvent({
+        tool: 'brush',
+        color: selectedColor,
+        brushWidth,
+        startX: prevMouseX,
+        startY: prevMouseY,
+        endX: e.offsetX,
+        endY: e.offsetY,
+      });
       break
     case 'eraser':
       ctx.strokeStyle = '#fff'
       ctx.lineTo(e.offsetX, e.offsetY)
       ctx.stroke()
+      emitDrawEvent({
+        tool: 'brush',
+        color: selectedColor,
+        brushWidth,
+        startX: prevMouseX,
+        startY: prevMouseY,
+        endX: e.offsetX,
+        endY: e.offsetY,
+      });
       break
   }
 
@@ -135,6 +183,8 @@ const drawTriangle = e => {
   ctx.closePath()
   fillColor.checked ? ctx.fill() : ctx.stroke()
 }
+
+
 setCanvasBg()
 canvas.addEventListener('mousedown', startDrawing)
 canvas.addEventListener('mousemove', drawing)

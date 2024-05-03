@@ -1,11 +1,12 @@
 const express = require('express')
-const socketIo = require('socket.io')
-const http = require('http')
 const mongoose = require('mongoose')
 const { log } = require('console')
+const path = require('path')
 const app = express()
-const server = http.createServer(app)
-const io = socketIo(server)
+const server = require('http').createServer(app)
+const io = require('socket.io')(server)
+
+const nodemoon = require('nodemon')
 
 
 mongoose.connect('mongodb+srv://ffarrux386:WkQcKzqtjqdwr0iV@cluster0.v5m9man.mongodb.net/?retryWrites=true&w=majority&appName=drawing')
@@ -25,6 +26,19 @@ const drawingSchema = new mongoose.Schema({
 if (db) {
     console.log("Connected to Mongoose");
 }
+
+app.get('/socket.io/socket.io.js', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../node_modules/socket.io/client-dist/socket.io.js'));
+})
+
+app.use(express.static('public', {
+    setHeaders: (res, path, stat) => {
+        if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    }
+}));
+
 const Drawing = mongoose.model('Drawing', drawingSchema)
 
 io.on('connection', socket => {
@@ -57,6 +71,10 @@ io.on('connection', socket => {
     })
 })
 
+
+app.get('/', (req, res) => {
+    res.status(200).send({ message: 'OK' });
+})
 
 
 const port = process.env.port || 3000
